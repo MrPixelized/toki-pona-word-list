@@ -15,13 +15,27 @@ class Definition:
 
     def __str__(self):
         res = ""
-        after = "\t"
         meanings = self.meanings.__iter__()
 
-        res += self.word + after + ": \t".join(next(meanings))
+        res += self.word + "\t" + ":\t".join(next(meanings))
 
         for meaning in meanings:
-            res += "\n" + " " * len(self.word) + after + ": \t".join(meaning)
+            res += "\n" + " " * len(self.word) + "\t" + ":\t".join(meaning)
+
+        return res
+
+    def prettify(self):
+        res = ""
+        meanings = self.meanings.__iter__()
+        meaning = next(meanings)
+
+        res += "\033[1m" + self.word + "\033[0m\t"
+        res += "\033[3m" + meaning[0] + "\t\033[0m" + meaning[1]
+
+        for meaning in meanings:
+            res += "\n"
+            res += " " * len(self.word) + "\t"
+            res += "\033[3m" + meaning[0] + "\t\033[0m" + meaning[1]
 
         return res
 
@@ -61,7 +75,7 @@ def main():
         if not definition:
             continue
 
-        print(definition)
+        print(definition.prettify())
         print()
 
 
