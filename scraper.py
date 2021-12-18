@@ -49,7 +49,7 @@ def download(url):
             return requests.get(url).content
 
 
-def main():
+def get_definitions():
     url = "http://www.tokipona.net/tp/classicwordlist.aspx"
     soup = BeautifulSoup(download(url), "html.parser")
 
@@ -75,6 +75,11 @@ def main():
         if not definition:
             continue
 
+        yield definition
+
+
+def main():
+    for definition in get_definitions():
         print(definition.prettify())
         print()
 
