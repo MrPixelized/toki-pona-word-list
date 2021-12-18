@@ -47,7 +47,7 @@ def main():
         if not card.known:
             cards.insert(pos, card)
         elif card.tries > 0:
-            card.ties -= 2
+            card.tries -= 2
             cards.insert(pos, card)
 
 
