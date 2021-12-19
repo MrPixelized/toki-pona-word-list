@@ -13,7 +13,7 @@ class Card:
         self.knowledge = obj
 
     def flip(self):
-        print(self.knowledge.prettify())
+        print(self.knowledge)
         print()
 
         ans = None
