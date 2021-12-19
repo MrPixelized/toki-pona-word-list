@@ -1,8 +1,25 @@
-from os import system
+import re
+from textwrap import indent, fill
+from os import system, get_terminal_size
 from random import randint, shuffle
 from readchar import readchar
 
 from scraper import get_definitions
+
+
+def replace_tab(s, tabstop=8):
+    """ Credit: Samuel on StackOverflow """
+    result = str()
+
+    for c in s:
+        if c == '\t':
+            result += ' '
+            while len(result) % tabstop != 0:
+                result += ' '
+        else:
+            result += c
+
+    return result
 
 
 class Card:
@@ -10,15 +27,45 @@ class Card:
         self.known = False
         self.tries = 0
 
-        self.knowledge = obj
+        self.definition = obj
 
-    def flip(self):
-        print(self.knowledge)
+    def flip(self, infostring=""):
+        # Obtain aesthetic variables
+        definition = str(self.definition)
+        definition = "\n".join(map(replace_tab, definition.split("\n")))
+
+        twidth = get_terminal_size().columns
+        theight = get_terminal_size().lines
+
+        width = max(map(len,
+            re.sub(r"\\x1b\[.*?m", "", str(definition.encode("ascii")))[2:-1]
+            .split("\\n"))
+        )
+        height = len(definition.split("\n"))
+
+        hpad = (twidth - width) // 2 * " "
+        vpad = ((theight - height) // 2 - infostring.count("\n") - 1) * "\n"
+
+        # Print initial prompt
+        system("clear")
+        print(infostring)
+        print(vpad)
+        print(f"\033[1m{self.definition.word}\033[0m".center(twidth))
         print()
+        print("Flip card...".center(twidth))
+        if readchar() == "q":
+            raise KeyboardInterrupt
+
+        # Print answer
+        system("clear")
+        print(infostring)
+        print(vpad)
+        print(indent(definition, hpad))
+        print()
+        print("Known? (y/n/q)".center(twidth))
 
         ans = None
         while ans not in ("y", "n", "q"):
-            print("Known? (y/n/q)")
             ans = readchar()
 
         if ans == "y":
@@ -36,11 +83,8 @@ def main():
 
     while cards:
         system("clear")
-        print(f"({total - len(cards)} / {total})")
-        print()
-
         card = cards.pop()
-        card.flip()
+        card.flip(infostring=f"({total - len(cards) - 1} / {total})")
 
         pos = len(cards) - randint(0, round(len(cards) * 0.1))
 

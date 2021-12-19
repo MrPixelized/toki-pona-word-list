@@ -1,3 +1,6 @@
+from textwrap import indent
+
+
 class WordClass:
     name = None
     prefix = None
@@ -73,9 +76,11 @@ class Definition:
             res += "\033[3m" + str(meaning[0]) + "\033[0m\t"
             res += meaning[0].prefix + meaning[1] + "\033[0m"
             res += "\n"
-            res += " " * len(self.word) + "\t"
 
-        return "\n".join(res.split("\n")[:-1])
+        [first, *rest] = res.split("\n")
+        res = first + "\n" + indent("\n".join(rest), " " * len(self.word) + "\t")
+
+        return res[:-1]
 
     def __bool__(self):
         return bool(self.meanings)
