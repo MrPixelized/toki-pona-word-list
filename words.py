@@ -58,6 +58,11 @@ class Separator(WordClass):
     prefix = "\033[1;38m"
 
 
+class Phrase(WordClass):
+    name = "phrase"
+    prefix = ""
+
+
 class Definition:
     def __init__(self, word):
         self.word = word
@@ -65,6 +70,23 @@ class Definition:
 
     def add_definition(self, wclass=Noun(), meaning=""):
         self.meanings.append((wclass, meaning))
+
+    def mask_one(self, placeholder="?"):
+        """ Replaces one word in the any of the meanings with "placeholder",
+        returning the replaced word """
+        idx = sum((len(m.split()) for m in self.meanings))
+
+        for m, i in enumerate(self.meanings):
+            c = len(m.split())
+
+            if c > idx:
+                idx -= c
+            else:
+                self.meanings[i] = m.split()
+                self.meanings[i][idx] = placeholder * len(self.meanings[i][idx])
+                self.meanings[i] = " ".join(self.meanings[i])
+
+                return m
 
     def __str__(self):
         res = ""
@@ -78,9 +100,15 @@ class Definition:
             res += "\n"
 
         [first, *rest] = res.split("\n")
-        res = first + "\n" + indent("\n".join(rest), " " * len(self.word) + "\t")
+        res = first + "\n" + \
+            indent("\n".join(rest), " " * len(self.word) + "\t")
 
         return res[:-1]
 
     def __bool__(self):
         return bool(self.meanings)
+
+
+class PhraseDefinition(Definition):
+    def add_definition(self, meaning=""):
+        self.meanings.append((Phrase(), meaning))

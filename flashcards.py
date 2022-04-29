@@ -4,7 +4,7 @@ from os import system, get_terminal_size
 from random import randint, shuffle
 from readchar import readchar
 
-from scraper import get_definitions
+from scraper import get_definitions, get_omniglot_phrases
 
 
 def replace_tab(s, tabstop=8):
